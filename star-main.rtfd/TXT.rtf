@@ -1,0 +1,701 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2818
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww27980\viewh14060\viewkind0
+\deftab720
+\pard\pardeftab720\sa213\partightenfactor0
+
+\f0\b\fs32 \cf2 \expnd0\expndtw0\kerning0
+EXP2
+\f1\b0\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\fs32 \cf2 Example: All Electronics may create a sales data warehouse in order to keep records of the store\'92s sales with respect to the dimensions time, item, branch, and location. These dimensions allow the store to keep track of things like monthly sales of items and the branches and locations at which the items were sold.
+\fs29\fsmilli14667 \
+
+\fs32 -- Step 1: Create a Database and Use It
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 Sudo mysql
+\fs29\fsmilli14667 \
+
+\fs32 CREATE DATABASE sales_data_warehouse;
+\fs29\fsmilli14667 \
+
+\fs32 USE sales_data_warehouse;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Step 2: Create Dimension Tables
+\fs29\fsmilli14667 \
+
+\fs32 -- A. Create the Product Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 CREATE TABLE Product_dw (
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 prod_id INT PRIMARY KEY, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 Prod_name VARCHAR(60) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 Prod_category VARCHAR(255) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 Brand_name VARCHAR(255) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 Suppl_name VARCHAR(255) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 Prod_price DECIMAL(10, 2)
+\fs29\fsmilli14667 \
+
+\fs32 );
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- B. Create the Time Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 CREATE TABLE Time_dw (
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 time_id INT PRIMARY KEY, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 day DATE NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 month VARCHAR(255) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 qt VARCHAR(255) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 yr VARCHAR(255) NOT NULL
+\fs29\fsmilli14667 \
+
+\fs32 );
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- C. Create the Location Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 CREATE TABLE Location_dw (
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 loc_id INT PRIMARY KEY, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 street VARCHAR(60) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 city VARCHAR(255) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 state VARCHAR(255) NOT NULL, 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 country VARCHAR(255) NOT NULL
+\fs29\fsmilli14667 \
+
+\fs32 );
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Step 3: Create the Sales Fact Table
+\fs29\fsmilli14667 \
+
+\fs32 CREATE TABLE Fact_sales (
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 prod_id INT,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 time_id INT,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 loc_id INT,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 number_of_unit_sold INT NOT NULL,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 Total_sales DECIMAL(15, 2) NOT NULL,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 FOREIGN KEY (prod_id) REFERENCES Product_dw(prod_id),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 FOREIGN KEY (time_id) REFERENCES Time_dw(time_id),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 FOREIGN KEY (loc_id) REFERENCES Location_dw(loc_id)
+\fs29\fsmilli14667 \
+
+\fs32 );
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Step 4: Insert Data into the Tables
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- A. Insert Data into Product Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 INSERT INTO Product_dw (prod_id, Prod_name, Prod_category, Brand_name, Suppl_name, Prod_price)
+\fs29\fsmilli14667 \
+
+\fs32 VALUES (1, 'Rice', 'Grocery', 'Dawat', 'Ramesh', 140),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (2, 'Sugar', 'Grocery', 'Dawat', 'Ramesh', 50),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (3, 'Kurta', 'Cloth', 'Max', 'Lila', 500),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (4, 'Jacket', 'Cloth', 'Max', 'Lila', 700);
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- B. Insert Data into Time Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 INSERT INTO Time_dw (time_id, day, month, qt, yr)
+\fs29\fsmilli14667 \
+
+\fs32 VALUES (101, '2021-01-17', 'January', 'Q1', '2021'),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (102, '2021-02-14', 'February', 'Q1', '2021'),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (103, '2021-05-21', 'May', 'Q2', '2021'),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (104, '2021-06-26', 'June', 'Q2', '2021');
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- C. Insert Data into Location Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 INSERT INTO Location_dw (loc_id, street, city, state, country)
+\fs29\fsmilli14667 \
+
+\fs32 VALUES (201, 'ML Road', 'Mumbai', 'Maharashtra', 'India'),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (202, 'AI Road', 'Mumbai', 'Maharashtra', 'India'),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (203, 'BI Road', 'Kolkata', 'West Bengal', 'India'),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (204, 'DB Road', 'Kolkata', 'West Bengal', 'India');
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- D. Insert Data into Sales Fact Table
+\fs29\fsmilli14667 \
+
+\fs32 INSERT INTO Fact_sales (prod_id, time_id, loc_id, number_of_unit_sold, Total_sales)
+\fs29\fsmilli14667 \
+
+\fs32 VALUES (1, 101, 201, 400, 80000),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (1, 102, 201, 400, 90000),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (1, 103, 201, 400, 70000),
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0\'a0\'a0\'a0 (1, 104, 201, 400, 90000);
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Step 5: View Data from the Tables
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- A. View Data from the Product Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 SELECT * FROM Product_dw;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- B. View Data from the Time Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 SELECT * FROM Time_dw;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- C. View Data from the Location Dimension Table
+\fs29\fsmilli14667 \
+
+\fs32 SELECT * FROM Location_dw;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- D. View Data from the Sales Fact Table
+\fs29\fsmilli14667 \
+
+\fs32 SELECT * FROM Fact_sales;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\f0\b\fs37\fsmilli18667 \cf2 OLAP OPERATION
+\f1\b0\fs29\fsmilli14667 \
+
+\f0\b\fs37\fsmilli18667 EXP3
+\f1\b0\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\fs32 \cf2 -- 1. Slice: Select sales data for the month of "January"
+\fs29\fsmilli14667 \
+
+\fs32 SELECT P.Prod_name, T.month, L.city, F.number_of_unit_sold, F.Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales F
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Product_dw P ON F.prod_id = P.prod_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw T ON F.time_id = T.time_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Location_dw L ON F.loc_id = L.loc_id
+\fs29\fsmilli14667 \
+
+\fs32 WHERE T.month = 'January';
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- 2. Dice: Select sales data for the months of "January" and "February" in cities "Mumbai" and "Kolkata"
+\fs29\fsmilli14667 \
+
+\fs32 SELECT P.Prod_name, T.month, L.city, F.number_of_unit_sold, F.Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales F
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Product_dw P ON F.prod_id = P.prod_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw T ON F.time_id = T.time_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Location_dw L ON F.loc_id = L.loc_id
+\fs29\fsmilli14667 \
+
+\fs32 WHERE T.month IN ('January', 'February')
+\fs29\fsmilli14667 \
+
+\fs32 \'a0 AND L.city IN ('Mumbai', 'Kolkata');
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- 3. Rollup: Get the total sales by year
+\fs29\fsmilli14667 \
+
+\fs32 SELECT T.yr, SUM(F.Total_sales) AS Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales F
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw T ON F.time_id = T.time_id
+\fs29\fsmilli14667 \
+
+\fs32 GROUP BY T.yr;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- 4. Drilldown: Get monthly total sales from yearly data
+\fs29\fsmilli14667 \
+
+\fs32 SELECT T.yr, T.month, SUM(F.Total_sales) AS Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales F
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw T ON F.time_id = T.time_id
+\fs29\fsmilli14667 \
+
+\fs32 GROUP BY T.yr, T.month;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- 5. Pivot: Display sales across different months as columns
+\fs29\fsmilli14667 \
+
+\fs32 SELECT 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 P.Prod_name,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 SUM(CASE WHEN T.month = 'January' THEN F.Total_sales ELSE 0 END) AS January_sales,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 SUM(CASE WHEN T.month = 'February' THEN F.Total_sales ELSE 0 END) AS February_sales,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 SUM(CASE WHEN T.month = 'May' THEN F.Total_sales ELSE 0 END) AS May_sales,
+\fs29\fsmilli14667 \
+
+\fs32 \'a0\'a0\'a0 SUM(CASE WHEN T.month = 'June' THEN F.Total_sales ELSE 0 END) AS June_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales F
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Product_dw P ON F.prod_id = P.prod_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw T ON F.time_id = T.time_id
+\fs29\fsmilli14667 \
+
+\fs32 GROUP BY P.Prod_name;
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\f0\b\fs32 \cf2 \'a0
+\f1\b0\fs29\fsmilli14667 \
+
+\f0\b\fs32 OR
+\f1\b0\fs29\fsmilli14667 \
+
+\f0\b\fs32 \'a0
+\f1\b0\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\fs32 \cf2 -- Slice: Filter sales data for January
+\fs29\fsmilli14667 \
+
+\fs32 SELECT Prod_name, month, Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Product_dw ON Fact_sales.prod_id = Product_dw.prod_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw ON Fact_sales.time_id = Time_dw.time_id
+\fs29\fsmilli14667 \
+
+\fs32 WHERE month = 'January';
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Dice: Filter sales data for January and February in Mumbai
+\fs29\fsmilli14667 \
+
+\fs32 SELECT Prod_name, month, city, Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Product_dw ON Fact_sales.prod_id = Product_dw.prod_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw ON Fact_sales.time_id = Time_dw.time_id
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Location_dw ON Fact_sales.loc_id = Location_dw.loc_id
+\fs29\fsmilli14667 \
+
+\fs32 WHERE month IN ('January', 'February') AND city = 'Mumbai';
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Rollup: Total sales by year
+\fs29\fsmilli14667 \
+
+\fs32 SELECT yr, SUM(Total_sales) AS Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw ON Fact_sales.time_id = Time_dw.time_id
+\fs29\fsmilli14667 \
+
+\fs32 GROUP BY yr;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Drilldown: Total sales by month
+\fs29\fsmilli14667 \
+
+\fs32 SELECT month, SUM(Total_sales) AS Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw ON Fact_sales.time_id = Time_dw.time_id
+\fs29\fsmilli14667 \
+
+\fs32 GROUP BY month;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 -- Pivot: Show sales for each month
+\fs29\fsmilli14667 \
+
+\fs32 SELECT month, SUM(Total_sales) AS Total_sales
+\fs29\fsmilli14667 \
+
+\fs32 FROM Fact_sales
+\fs29\fsmilli14667 \
+
+\fs32 JOIN Time_dw ON Fact_sales.time_id = Time_dw.time_id
+\fs29\fsmilli14667 \
+
+\fs32 GROUP BY month;
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\f0\b\fs42\fsmilli21333 \cf2 Mumbai university enroollment
+\f1\b0\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\fs32 \cf2 -- Dimension Table: Student 
+\fs29\fsmilli14667 \
+
+\fs32 CREATE TABLE Student ( StudentID INT PRIMARY KEY, FirstName VARCHAR(50), LastName VARCHAR(50), Major VARCHAR(50),YearOfStudy INT ); 
+\fs29\fsmilli14667 \
+
+\fs32 -- Dimension Table: Course 
+\fs29\fsmilli14667 \
+
+\fs32 CREATE TABLE Course ( CourseID INT PRIMARY KEY, CourseName VARCHAR(100), Department VARCHAR(50), Instructor VARCHAR(50) );
+\fs29\fsmilli14667 \
+
+\fs32 \'a0-- Dimension Table: Semester
+\fs29\fsmilli14667 \
+
+\fs32 \'a0CREATE TABLE Semester ( SemesterID INT PRIMARY KEY, SemesterName VARCHAR(50), Year INT ); 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0-- Fact Table: Enrollment 
+\fs29\fsmilli14667 \
+
+\fs32 CREATE TABLE Enrollment
+\fs29\fsmilli14667 \
+
+\fs32 \'a0( EnrollmentID INT PRIMARY KEY, StudentID INT, CourseID INT, SemesterID INT, Credits INT, Grade CHAR(1), FOREIGN KEY (StudentID) REFERENCES Student(StudentID), FOREIGN KEY (CourseID) REFERENCES Course(CourseID), FOREIGN KEY (SemesterID) REFERENCES Semester(SemesterID) );
+\fs29\fsmilli14667 \
+
+\fs32 \'a0-- Insert into Student
+\fs29\fsmilli14667 \
+
+\fs32 \'a0INSERT INTO Student (StudentID, FirstName, LastName, Major, YearOfStudy) 
+\fs29\fsmilli14667 \
+
+\fs32 VALUES (1, 'John', 'Doe', 'Computer Science', 2), (2, 'Jane', 'Smith', 'Mathematics', 3), (3, 'Emily', 'Johnson', 'Engineering', 1), (4, 'Michael', 'Brown', 'Physics', 4);
+\fs29\fsmilli14667 \
+
+\fs32 \'a0-- Insert into Course 
+\fs29\fsmilli14667 \
+
+\fs32 INSERT INTO Course (CourseID, CourseName, Department, Instructor) VALUES (101, 'Database Systems', 'Computer Science', 'Dr. Alice Green'), (102, 'Calculus I', 'Mathematics', 'Prof. Bob White'), (103, 'Thermodynamics', 'Engineering', 'Dr. Carol Black'), (104, 'Quantum Mechanics', 'Physics', 'Dr. Dave Grey'); 
+\fs29\fsmilli14667 \
+
+\fs32 -- Insert into Semester
+\fs29\fsmilli14667 \
+
+\fs32 \'a0INSERT INTO Semester (SemesterID, SemesterName, Year) 
+\fs29\fsmilli14667 \
+
+\fs32 VALUES (1, 'Fall', 2023), (2, 'Spring', 2024); 
+\fs29\fsmilli14667 \
+
+\fs32 -- Insert into Enrollment
+\fs29\fsmilli14667 \
+
+\fs32 \'a0INSERT INTO Enrollment (EnrollmentID, StudentID, CourseID, SemesterID, Credits, Grade) VALUES (1, 1, 101, 1, 3, 'A'), (2, 2, 102, 1, 4, 'B'), (3, 3, 103, 2, 3, 'A'), (4, 4, 104, 2, 4, 'C'), (5, 1, 102, 2, 4, 'B'), (6, 2, 103, 1, 3, 'A')
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 Exp5
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+\cf2 {{\NeXTGraphic unknown.jpg \width14400 \height21080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\sa213\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\fs32 \cf2 \'a0
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sl342\sa213\partightenfactor0
+\cf2 {{\NeXTGraphic 1__#$!@%!#__unknown.jpg \width14400 \height22000 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}
+\fs32 \uc0\u8232 
+\fs29\fsmilli14667 \
+
+\fs32 \'a0
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+
+\fs32 \cf2 DECISION TREE
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sl342\sa213\partightenfactor0
+\cf2 {{\NeXTGraphic unknown.png \width4520 \height2790 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}{{\NeXTGraphic 1__#$!@%!#__unknown.png \width3800 \height3710 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\sl342\sa213\partightenfactor0
+
+\fs32 \cf2 \uc0\u8232 
+\fs29\fsmilli14667 \
+\'a0\
+\pard\pardeftab720\sl313\sa213\partightenfactor0
+\cf2 {{\NeXTGraphic 2__#$!@%!#__unknown.png \width4090 \height4690 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\sl313\sa213\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl342\sa213\partightenfactor0
+
+\fs32 \cf2 \'a0
+\fs29\fsmilli14667 \
+\pard\pardeftab720\sa213\partightenfactor0
+\cf2 \'a0\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+K MEAN\
+\pard\pardeftab720\sa213\partightenfactor0
+\cf2 {{\NeXTGraphic 3__#$!@%!#__unknown.png \width4570 \height5740 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\sa213\partightenfactor0
+\cf2 \
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+\'a0\
+AGGLOMERATIVE\
+\pard\pardeftab720\sa213\partightenfactor0
+\cf2 {{\NeXTGraphic 4__#$!@%!#__unknown.png \width4660 \height5520 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\pardeftab720\sa213\partightenfactor0
+\cf2 \'a0\
+APRIORI{{\NeXTGraphic 2__#$!@%!#__unknown.jpg \width14400 \height32000 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+}
